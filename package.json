@@ -1,0 +1,19 @@
+{
+  "name": "alnd-ai-chat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI chat by Aland Yudhistira (2025) with OpenAI backend",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "build": "echo No build step needed",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "openai": "^4.68.4",
+    "compression": "^1.7.4"
+  }
+}
