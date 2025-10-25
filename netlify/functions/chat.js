@@ -1,7 +1,8 @@
 // Netlify Function: Chat proxy to OpenAI (no SDK, uses fetch)
 // Path: /.netlify/functions/chat
 
-const MODEL = 'gpt-4o-mini';
+const MODEL_ENV = process.env.OPENAI_MODEL || 'gpt-4o';
+const MODELS = MODEL_ENV.split(',').map((s) => s.trim()).filter(Boolean);
 const MAX_HISTORY_ITEMS = 20;
 const MAX_CONTENT_LEN = 8000; // chars per message
 
@@ -39,30 +40,18 @@ export async function handler(event) {
       msgs.push({ role, content });
     }
 
-    // Call OpenAI Chat Completions
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: msgs,
-        temperature: 0.6,
-        max_tokens: 600
-      })
-    });
-
-    if (!resp.ok) {
-      const errTxt = await safeText(resp);
-      console.error('OpenAI error:', resp.status, errTxt);
-      return json(resp.status, { error: 'OpenAI request failed' });
+    // Try models with fallback
+    let lastErrTxt = '';
+    for (const MODEL of MODELS) {
+      try {
+        const reply = await callOpenAIWithRetry(apiKey, MODEL, msgs);
+        return json(200, { reply, model: MODEL });
+      } catch (e) {
+        lastErrTxt = e && e.message ? e.message : String(e);
+        continue; // try next model
+      }
     }
-
-    const data = await resp.json();
-    const reply = (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '').trim();
-    return json(200, { reply });
+    return json(502, { error: lastErrTxt || 'All models failed' });
   } catch (e) {
     console.error('Function error:', e);
     return json(500, { error: 'Server error' });
@@ -83,4 +72,41 @@ function json(status, body, extraHeaders) {
 
 async function safeText(res) {
   try { return await res.text(); } catch { return ''; }
+}
+
+async function callOpenAIWithRetry(apiKey, model, messages) {
+  const maxAttempts = 3;
+  let delay = 500;
+  let lastErr = '';
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.6,
+        max_tokens: 600
+      })
+    });
+
+    if (resp.ok) {
+      const data = await resp.json();
+      return (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '').trim();
+    }
+
+    const status = resp.status;
+    lastErr = await safeText(resp);
+    // Retry on 429 and 5xx
+    if (status === 429 || (status >= 500 && status < 600)) {
+      await new Promise(r => setTimeout(r, delay));
+      delay *= 2;
+      continue;
+    }
+    throw new Error(lastErr || `OpenAI error ${status}`);
+  }
+  throw new Error(lastErr || 'OpenAI request failed');
 }
