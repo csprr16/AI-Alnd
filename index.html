@@ -1,494 +1,676 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AI Chat — Aland Yudhistira (2025)</title>
-    <meta name="description" content="AI otomatis chat buatan Aland Yudhistira, 2025" />
-    <style>
-      :root {
-        --bg: #0b1020;
-        --panel: #121932;
-        --panel-2: #0f1730;
-        --text: #e7ecff;
-        --muted: #a7b1d6;
-        --brand: #6ea8fe;
-        --accent: #8ce99a;
-        --danger: #ff6b6b;
-        --shadow: 0 10px 30px rgba(0,0,0,.35);
-      }
-      * { box-sizing: border-box; }
-      html, body { height: 100%; }
-      body {
-        margin: 0;
-        background: radial-gradient(1200px 800px at 20% -10%, #16224b 0%, transparent 55%),
-                    radial-gradient(1000px 700px at 120% 10%, #10204a 0%, transparent 50%),
-                    var(--bg);
-        color: var(--text);
-        font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      }
-      .app {
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        height: 100%;
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      header {
-        position: sticky; top: 0; z-index: 10;
-        padding: 16px clamp(12px, 3vw, 24px);
-        background: linear-gradient(180deg, rgba(9,13,26,0.9), rgba(9,13,26,0.4));
-        backdrop-filter: blur(6px);
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-      }
-      header .title {
-        display: flex; align-items: center; gap: 12px; font-weight: 600;
-      }
-      header .badge {
-        font-size: 12px; color: var(--bg); background: var(--accent);
-        padding: 2px 8px; border-radius: 999px; font-weight: 700;
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Chat — Aland Yudhistira (2025)</title>
+  <meta name="description" content="AI otomatis chat buatan Aland Yudhistira, 2025" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121932;
+      --panel-2: #0f1730;
+      --text: #e7ecff;
+      --muted: #a7b1d6;
+      --brand: #6ea8fe;
+      --accent: #8ce99a;
+      --danger: #ff6b6b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 800px at 20% -10%, #16224b 0%, transparent 55%),
+        radial-gradient(1000px 700px at 120% 10%, #10204a 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 16px clamp(12px, 3vw, 24px);
+      background: linear-gradient(180deg, rgba(9, 13, 26, 0.9), rgba(9, 13, 26, 0.4));
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    header .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+    }
+
+    header .badge {
+      font-size: 12px;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .chat {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 12px;
+      padding: 12px clamp(12px, 3vw, 24px) 18px;
+    }
+
+    .messages {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 16px;
+      overflow: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .msg {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .msg:last-child {
+      margin-bottom: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #0c1430;
+      background: var(--accent);
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .15);
+    }
+
+    .avatar.user {
+      background: var(--brand);
+      color: #07102a;
+    }
+
+    .bubble {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .06);
+      background: rgba(255, 255, 255, .03);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .bubble.info {
+      background: rgba(140, 233, 154, .12);
+      border-color: rgba(140, 233, 154, .5);
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .composer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .input {
+      background: linear-gradient(180deg, #121b3a, #0c1430);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    textarea {
+      width: 100%;
+      height: 56px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      line-height: 1.4;
+      padding: 6px 8px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--bg);
+      background: var(--brand);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    footer {
+      padding: 10px 16px 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .typing {
+      display: inline-block;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--muted);
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: blink 1.2s infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes blink {
+
+      0%,
+      80%,
+      100% {
+        opacity: .2
       }
 
-      .chat {
-        display: grid;
-        grid-template-rows: 1fr auto;
-        gap: 12px;
-        padding: 12px clamp(12px, 3vw, 24px) 18px;
+      40% {
+        opacity: 1
+      }
+    }
+
+    @media (max-width: 640px) {
+      .msg {
+        grid-template-columns: 32px 1fr;
+        gap: 10px;
       }
 
-      .messages {
-        background: linear-gradient(180deg, var(--panel), var(--panel-2));
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 16px;
-        padding: 16px;
-        overflow: auto;
-        box-shadow: var(--shadow);
-      }
-
-      .msg { display: grid; grid-template-columns: 40px 1fr; gap: 12px; margin-bottom: 14px; }
-      .msg:last-child { margin-bottom: 0; }
       .avatar {
-        width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
-        font-weight: 800; color: #0c1430; background: var(--accent);
-        box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
-      }
-      .avatar.user { background: var(--brand); color: #07102a; }
-      .bubble {
-        padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.06);
-        background: rgba(255,255,255,.03);
-        white-space: pre-wrap; word-wrap: break-word; overflow-wrap: anywhere;
-      }
-      .bubble.info {
-        background: rgba(140,233,154,.12);
-        border-color: rgba(140,233,154,.5);
-      }
-      .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-      .composer {
-        display: grid; grid-template-columns: 1fr auto; gap: 10px;
-        align-items: end;
-      }
-      .input {
-        background: linear-gradient(180deg, #121b3a, #0c1430);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px; padding: 8px; box-shadow: var(--shadow);
-      }
-      textarea {
-        width: 100%; height: 56px; resize: none; border: 0; outline: 0;
-        background: transparent; color: var(--text);
-        font: inherit; line-height: 1.4; padding: 6px 8px;
-      }
-      .actions { display: flex; gap: 8px; }
-      button {
-        height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
-        color: var(--bg); background: var(--brand); font-weight: 700; cursor: pointer;
-        box-shadow: var(--shadow);
-      }
-      button.secondary { background: transparent; color: var(--text); border-color: rgba(255,255,255,0.12); }
-      button:disabled { opacity: .6; cursor: not-allowed; }
-
-      footer {
-        padding: 10px 16px 18px; text-align: center; color: var(--muted);
+        width: 32px;
+        height: 32px;
         font-size: 12px;
       }
-      a { color: var(--accent); text-decoration: none; }
-      a:hover { text-decoration: underline; }
+    }
 
-      .typing { display: inline-block; }
-      .dot { display: inline-block; width: 6px; height: 6px; background: var(--muted); border-radius: 50%; margin: 0 2px; animation: blink 1.2s infinite; }
-      .dot:nth-child(2){ animation-delay: .2s }
-      .dot:nth-child(3){ animation-delay: .4s }
-      @keyframes blink { 0%, 80%, 100% { opacity: .2 } 40% { opacity: 1 } }
 
-      @media (max-width: 640px) {
-        .msg { grid-template-columns: 32px 1fr; gap: 10px; }
-        .avatar { width: 32px; height: 32px; font-size: 12px; }
-      }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+    }
 
-      /* Modal announcement */
-      .modal-backdrop {
-        position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
-        background: rgba(0,0,0,.55); backdrop-filter: blur(4px); z-index: 9999;
-      }
-      .modal-backdrop.open { display: flex; }
-      .modal {
-        max-width: 520px; width: calc(100% - 32px);
-        background: linear-gradient(180deg, #13214b, #0d183a);
-        border: 1px solid rgba(255,255,255,.12);
-        border-radius: 14px; box-shadow: var(--shadow);
-      }
-      .modal header { display:flex; align-items:center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
-      .modal header .title { font-weight: 700; }
-      .modal .body { padding: 16px; }
-      .modal .actions { display:flex; justify-content:flex-end; gap:8px; padding: 0 14px 14px; }
-      .modal .close {
-        background: transparent; border: 1px solid rgba(255,255,255,.15); color: var(--text);
-        width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
-      }
-      .modal .primary { background: var(--brand); color: var(--bg); border: 0; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-weight: 700; }
-    </style>
-  </head>
-  <body>
-    <noscript>Silakan aktifkan JavaScript untuk menggunakan AI chat ini.</noscript>
-    <div class="app">
-      <header>
-        <div class="title">
-          <div style="display:flex;align-items:center;gap:10px">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M12 2l2.39 4.84 5.34.78-3.86 3.76.91 5.32L12 14.77 6.22 16.7l.91-5.32L3.27 7.62l5.34-.78L12 2z" fill="url(#g)"/>
-              <defs><linearGradient id="g" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#8ce99a"/><stop offset="1" stop-color="#6ea8fe"/></linearGradient></defs>
-            </svg>
-            <span>AI Chat — Aland Yudhistira</span>
-          </div>
-          <span class="badge">2025</span>
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      max-width: 520px;
+      width: calc(100% - 32px);
+      background: linear-gradient(180deg, #13214b, #0d183a);
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .modal header .title {
+      font-weight: 700;
+    }
+
+    .modal .body {
+      padding: 16px;
+    }
+
+    .modal .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 0 14px 14px;
+    }
+
+    .modal .close {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, .15);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal .primary {
+      background: var(--brand);
+      color: var(--bg);
+      border: 0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>Silakan aktifkan JavaScript untuk menggunakan AI chat ini.</noscript>
+  <div class="app">
+    <header>
+      <div class="title">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true">
+            <path d="M12 2l2.39 4.84 5.34.78-3.86 3.76.91 5.32L12 14.77 6.22 16.7l.91-5.32L3.27 7.62l5.34-.78L12 2z"
+              fill="url(#g)" />
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#8ce99a" />
+                <stop offset="1" stop-color="#6ea8fe" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>AI Chat — Aland Yudhistira</span>
         </div>
-      </header>
+        <span class="badge">2025</span>
+      </div>
+    </header>
 
-      <main class="chat">
-        <section id="messages" class="messages" aria-live="polite" aria-label="Percakapan" role="log"></section>
+    <main class="chat">
+      <section id="messages" class="messages" aria-live="polite" aria-label="Percakapan" role="log"></section>
 
-        <form id="composer" class="composer" autocomplete="off">
-          <div class="input">
-            <textarea id="prompt" placeholder="Ketik pesan… (Enter = kirim, Shift+Enter = baris baru)" rows="3"></textarea>
-            <div class="meta" style="margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <label style="display:inline-flex;gap:8px;align-items:center;cursor:pointer">
-                <input id="file-input" type="file" multiple style="display:none" accept="image/*,.txt,.md,.csv,.json,.log" />
-                <span style="border:1px solid rgba(255,255,255,.12);padding:4px 8px;border-radius:8px">+ Lampirkan</span>
-              </label>
-              <div id="attachments" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-            </div>
+      <form id="composer" class="composer" autocomplete="off">
+        <div class="input">
+          <textarea id="prompt" placeholder="Ketik pesan… (Enter = kirim, Shift+Enter = baris baru)"
+            rows="3"></textarea>
+          <div class="meta" style="margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <label style="display:inline-flex;gap:8px;align-items:center;cursor:pointer">
+              <input id="file-input" type="file" multiple style="display:none"
+                accept="image/*,.txt,.md,.csv,.json,.log" />
+              <span style="border:1px solid rgba(255,255,255,.12);padding:4px 8px;border-radius:8px">+ Lampirkan</span>
+            </label>
+            <div id="attachments" style="display:flex;gap:6px;flex-wrap:wrap"></div>
           </div>
-          <div class="actions">
-            <button type="button" id="clear" class="secondary" title="Bersihkan percakapan">Bersihkan</button>
-            <button id="send" type="submit" title="Kirim">Kirim</button>
-          </div>
-        </form>
-      </main>
-
-
-      <footer>
-        Dibuat oleh <strong>Aland Yudhistira</strong>, 2025 • Demo AI chat lokal (tanpa server).<br/>
-        Tip: tekan Enter untuk kirim, Shift+Enter untuk baris baru.
-      </footer>
-    </div>
-
-    <!-- Announcement Modal -->
-    <div id="announce" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="announce-title">
-      <div class="modal" role="document">
-        <header>
-          <div class="title" id="announce-title">ALND-AI16 V2</div>
-          <button id="announce-close" class="close" aria-label="Tutup">×</button>
-        </header>
-        <div class="body">
-          <div style="font-size:16px;font-weight:700;margin-bottom:6px">ALND-AI16 V2 Siap Di Coba</div>
-          <div style="color: var(--muted)">Selamat datang! Anda dapat langsung mencoba chat atau melampirkan gambar/teks untuk dianalisis.</div>
         </div>
         <div class="actions">
-          <button id="announce-ok" class="primary">Mulai</button>
+          <button type="button" id="clear" class="secondary" title="Bersihkan percakapan">Bersihkan</button>
+          <button id="send" type="submit" title="Kirim">Kirim</button>
         </div>
+      </form>
+    </main>
+
+
+    <footer>
+      Dibuat oleh <strong>Aland Yudhistira</strong>, 2025 • Demo AI chat lokal (tanpa server).<br />
+      Tip: tekan Enter untuk kirim, Shift+Enter untuk baris baru.
+    </footer>
+  </div>
+
+  <div id="announce" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="announce-title">
+    <div class="modal" role="document">
+      <header>
+        <div class="title" id="announce-title">ALND-AI16 V2</div>
+        <button id="announce-close" class="close" aria-label="Tutup">×</button>
+      </header>
+      <div class="body">
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px">ALND-AI16 V2 Siap Di Coba</div>
+        <div style="color: var(--muted)">Selamat datang! Anda dapat langsung mencoba chat atau melampirkan gambar/teks
+          untuk dianalisis.</div>
+      </div>
+      <div class="actions">
+        <button id="announce-ok" class="primary">Mulai</button>
       </div>
     </div>
+  </div>
 
-    <script>
-      // Utilitas kecil
-      const $ = (q, el = document) => el.querySelector(q);
-      const $$ = (q, el = document) => Array.from(el.querySelectorAll(q));
+  <script>
+    const $ = (q, el = document) => el.querySelector(q);
+    const $$ = (q, el = document) => Array.from(el.querySelectorAll(q));
 
-      const messagesEl = $('#messages');
-      const promptEl = $('#prompt');
-      const composerEl = $('#composer');
-      const sendBtn = $('#send');
-      const clearBtn = $('#clear');
-      const fileInput = document.getElementById('file-input');
-      const attachmentsEl = document.getElementById('attachments');
-      let pendingAttachments = [];
+    const messagesEl = $('#messages');
+    const promptEl = $('#prompt');
+    const composerEl = $('#composer');
+    const sendBtn = $('#send');
+    const clearBtn = $('#clear');
+    const fileInput = document.getElementById('file-input');
+    const attachmentsEl = document.getElementById('attachments');
+    let pendingAttachments = [];
 
-      // Modal elements
-      const announceEl = document.getElementById('announce');
-      const announceClose = document.getElementById('announce-close');
-      const announceOk = document.getElementById('announce-ok');
+    const announceEl = document.getElementById('announce');
+    const announceClose = document.getElementById('announce-close');
+    const announceOk = document.getElementById('announce-ok');
 
-      const BOT_NAME = 'ALND-AI';
-      const AUTHOR = 'Aland Yudhistira';
 
-      // Persistensi riwayat sederhana
-      const STORAGE_KEY = 'alnd_ai_chat_history_v1';
-      function saveHistory() {
-        const data = $$('.msg').map(node => ({
-          role: node.dataset.role,
-          html: $('.bubble', node).innerHTML,
-          time: $('.meta', node).dataset.ts || ''
-        }));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
-      function loadHistory() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return false;
-          const arr = JSON.parse(raw);
-          messagesEl.innerHTML = '';
-          for (const item of arr) {
-            appendMessage(item.role, item.html, true, item.time);
-          }
-          scrollToBottom();
-          return true;
-        } catch {}
-        return false;
-      }
+    const BOT_NAME = 'ALND-AI';
+    const AUTHOR = 'Aland Yudhistira';
 
-      function nowStr() {
-        const d = new Date();
-        return d.toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
-      }
+    const STORAGE_KEY = 'alnd_ai_chat_history_v1';
+    function saveHistory() {
+      const data = $$('.msg').map(node => ({
+        role: node.dataset.role,
+        html: $('.bubble', node).innerHTML,
+        time: $('.meta', node).dataset.ts || ''
+      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const arr = JSON.parse(raw);
+        messagesEl.innerHTML = '';
+        for (const item of arr) {
+          appendMessage(item.role, item.html, true, item.time);
+        }
+        scrollToBottom();
+        return true;
+      } catch { }
+      return false;
+    }
 
-      function appendMessage(role, text, isHTML = false, ts = '') {
-        const wrap = document.createElement('div');
-        wrap.className = 'msg';
-        wrap.dataset.role = role;
-        const initials = role === 'user' ? 'YOU' : 'AI';
-        const avatarClass = role === 'user' ? 'avatar user' : 'avatar';
-        const time = ts || new Date().toISOString();
-        wrap.innerHTML = `
+    function nowStr() {
+      const d = new Date();
+      return d.toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
+    }
+
+    function appendMessage(role, text, isHTML = false, ts = '') {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg';
+      wrap.dataset.role = role;
+      const initials = role === 'user' ? 'YOU' : 'AI';
+      const avatarClass = role === 'user' ? 'avatar user' : 'avatar';
+      const time = ts || new Date().toISOString();
+      wrap.innerHTML = `
           <div class="${avatarClass}" aria-hidden="true">${initials}</div>
           <div>
             <div class="bubble">${isHTML ? text : escapeHtml(text)}</div>
             <div class="meta" data-ts="${time}">${role === 'user' ? 'Pengguna' : BOT_NAME} • ${new Date(time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
           </div>
         `;
-        messagesEl.appendChild(wrap);
-        saveHistory();
-      }
+      messagesEl.appendChild(wrap);
+      saveHistory();
+    }
 
-      function escapeHtml(s) {
-        return s.replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#39;'}[ch]));
-      }
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', '\'': '&#39;' }[ch]));
+    }
 
-      function scrollToBottom() {
-        messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
-      }
+    function scrollToBottom() {
+      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+    }
 
-      // Efek "bot sedang mengetik"
-      let typingNode = null;
-      function showTyping() {
-        hideTyping();
-        typingNode = document.createElement('div');
-        typingNode.className = 'msg';
-        typingNode.dataset.role = 'assistant';
-        typingNode.innerHTML = `
+    let typingNode = null;
+    function showTyping() {
+      hideTyping();
+      typingNode = document.createElement('div');
+      typingNode.className = 'msg';
+      typingNode.dataset.role = 'assistant';
+      typingNode.innerHTML = `
           <div class="avatar" aria-hidden="true">AI</div>
           <div>
             <div class="bubble typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
             <div class="meta">${BOT_NAME} • mengetik…</div>
           </div>
         `;
-        messagesEl.appendChild(typingNode);
-        scrollToBottom();
-      }
-      function hideTyping() {
-        if (typingNode && typingNode.parentNode) typingNode.parentNode.removeChild(typingNode);
-        typingNode = null;
-      }
+      messagesEl.appendChild(typingNode);
+      scrollToBottom();
+    }
+    function hideTyping() {
+      if (typingNode && typingNode.parentNode) typingNode.parentNode.removeChild(typingNode);
+      typingNode = null;
+    }
 
-      // Panggil backend OpenAI untuk mendapatkan jawaban
-      async function generateReply(input, history) {
-        const text = (input || '').trim();
-        if (!text && pendingAttachments.length === 0) return 'Bisa ulangi pertanyaannya?';
 
-        // Bangun riwayat percakapan (role: user/assistant)
-        const prior = history
-          .filter(h => h.role === 'user' || h.role === 'assistant')
-          .map(h => ({ role: h.role, content: h.text || '' }));
-        const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
+    async function generateReply(input, history) {
+      const text = (input || '').trim();
+      if (!text && pendingAttachments.length === 0) return 'Bisa ulangi pertanyaannya?';
 
-        const system = `${BOT_NAME} adalah asisten AI ramah berbahasa Indonesia, dibuat oleh ${AUTHOR} pada 2025. Jawab singkat, jelas, bantu langkah-langkah bila diminta.`;
 
-        try {
-          const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages, system, attachments: pendingAttachments })
-          });
-          let data;
-          if (!res.ok) {
-            try { data = await res.json(); } catch {}
-            throw new Error((data && data.error) ? data.error : ('HTTP ' + res.status));
-          }
-          data = await res.json();
-          if (data && typeof data.reply === 'string' && data.reply.trim()) return data.reply.trim();
-          return 'Maaf, saya tidak menerima balasan yang valid.';
-        } catch (err) {
-          console.error('API error:', err);
-          const msg = (err?.message || '').toLowerCase();
-          if (msg.includes('insufficient_quota') || msg.includes('quota') || msg.includes('429')) {
-            return 'Gagal: kuota/billing OpenAI Anda habis atau dibatasi. Cek billing dan usage.';
-          }
-          return 'Gagal: ' + (err?.message || 'tidak diketahui');
+      const prior = history
+        .filter(h => h.role === 'user' || h.role === 'assistant')
+        .map(h => ({ role: h.role, content: h.text || '' }));
+      const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
+
+      const system = `${BOT_NAME} adalah asisten AI ramah berbahasa Indonesia, dibuat oleh ${AUTHOR} pada 2025. Jawab singkat, jelas, bantu langkah-langkah bila diminta.`;
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages, system, attachments: pendingAttachments })
+        });
+        let data;
+        if (!res.ok) {
+          try { data = await res.json(); } catch { }
+          throw new Error((data && data.error) ? data.error : ('HTTP ' + res.status));
         }
+        data = await res.json();
+        if (data && typeof data.reply === 'string' && data.reply.trim()) return data.reply.trim();
+        return 'Maaf, saya tidak menerima balasan yang valid.';
+      } catch (err) {
+        console.error('API error:', err);
+        const msg = (err?.message || '').toLowerCase();
+        if (
+          msg.includes('insufficient_quota') ||
+          msg.includes('quota') ||
+          msg.includes('429') ||
+          msg.includes('rate limit') ||
+          msg.includes('billing')
+        ) {
+          return 'Maaf Server Sedang Sibuk. Terima Kasih';
+        }
+        return 'Gagal: ' + (err?.message || 'tidak diketahui');
       }
+    }
 
-      function tryCalc(text) {
-        try {
-          // sangat sederhana: ambil ekspresi angka + operator dasar
-          const expr = text.replace(/[^0-9+\-*/()., ]/g, '').replace(/,/g, '.');
-          if (!/[0-9]/.test(expr)) return null;
-          // hindari eval langsung: gunakan Function terkontrol
-          // hanya izinkan karakter yang sudah disaring
-          // eslint-disable-next-line no-new-func
-          const fn = new Function(`return (${expr})`);
-          const v = fn();
-          if (typeof v === 'number' && isFinite(v)) return String(v);
-        } catch {}
-        return null;
-      }
+    function tryCalc(text) {
+      try {
+        const expr = text.replace(/[^0-9+\-*/()., ]/g, '').replace(/,/g, '.');
+        if (!/[0-9]/.test(expr)) return null;
+        const fn = new Function(`return (${expr})`);
+        const v = fn();
+        if (typeof v === 'number' && isFinite(v)) return String(v);
+      } catch { }
+      return null;
+    }
 
-      // Kirim pesan
-      composerEl.addEventListener('submit', async (e) => {
+    composerEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = promptEl.value.trim();
+      if (!text) return;
+      promptEl.value = '';
+      appendMessage('user', text);
+      scrollToBottom();
+
+
+      const history = $$('.msg').map(node => ({
+        role: node.dataset.role,
+        text: $('.bubble', node).textContent.trim()
+      }));
+
+      showTyping();
+      await sleep(500 + Math.random() * 600);
+      const reply = await generateReply(text, history);
+      hideTyping();
+      appendMessage('assistant', reply);
+      scrollToBottom();
+      pendingAttachments = [];
+      renderAttachments();
+    });
+
+    promptEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        const text = promptEl.value.trim();
-        if (!text) return;
-        promptEl.value = '';
-        appendMessage('user', text);
-        scrollToBottom();
+        sendBtn.click();
+      }
+    });
 
-        // Kumpulkan ringkas riwayat untuk konteks
-        const history = $$('.msg').map(node => ({
-          role: node.dataset.role,
-          text: $('.bubble', node).textContent.trim()
-        }));
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('Bersihkan seluruh percakapan?')) return;
+      messagesEl.innerHTML = '';
+      pendingAttachments = [];
+      renderAttachments();
+      saveHistory();
+      greet();
+    });
 
-        showTyping();
-        // Simulasi latensi bot
-        await sleep(500 + Math.random()*600);
-        const reply = await generateReply(text, history);
-        hideTyping();
-        appendMessage('assistant', reply);
-        scrollToBottom();
-        // bersihkan lampiran setelah terkirim
-        pendingAttachments = [];
-        renderAttachments();
-      });
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-      // Enter untuk kirim, Shift+Enter untuk baris baru
-      promptEl.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          sendBtn.click();
-        }
-      });
-
-      clearBtn.addEventListener('click', () => {
-        if (!confirm('Bersihkan seluruh percakapan?')) return;
-        messagesEl.innerHTML = '';
-        pendingAttachments = [];
-        renderAttachments();
-        saveHistory();
-        greet();
-      });
-
-      function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-      function appendInfoMessage(text) {
-        const wrap = document.createElement('div');
-        wrap.className = 'msg';
-        wrap.dataset.role = 'assistant';
-        const time = new Date().toISOString();
-        wrap.innerHTML = `
+    function appendInfoMessage(text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg';
+      wrap.dataset.role = 'assistant';
+      const time = new Date().toISOString();
+      wrap.innerHTML = `
           <div class="avatar" aria-hidden="true">AI</div>
           <div>
             <div class="bubble info">${escapeHtml(text)}</div>
             <div class="meta" data-ts="${time}">INFO • ${new Date(time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
           </div>
         `;
-        messagesEl.appendChild(wrap);
-        saveHistory();
-      }
+      messagesEl.appendChild(wrap);
+      saveHistory();
+    }
 
-      function openAnnouncement() {
-        announceEl?.classList.add('open');
-      }
-      function closeAnnouncement() {
-        announceEl?.classList.remove('open');
-      }
-      announceClose?.addEventListener('click', closeAnnouncement);
-      announceOk?.addEventListener('click', closeAnnouncement);
-      announceEl?.addEventListener('click', (e) => { if (e.target === announceEl) closeAnnouncement(); });
+    function openAnnouncement() {
+      announceEl?.classList.add('open');
+    }
+    function closeAnnouncement() {
+      announceEl?.classList.remove('open');
+    }
+    announceClose?.addEventListener('click', closeAnnouncement);
+    announceOk?.addEventListener('click', closeAnnouncement);
+    announceEl?.addEventListener('click', (e) => { if (e.target === announceEl) closeAnnouncement(); });
 
-      function greet() {
-        openAnnouncement();
-        appendMessage('assistant', `Halo! Saya ${BOT_NAME}.\n\nIni adalah demo AI chat lokal yang dibuat oleh ${AUTHOR} pada tahun 2025. Tanyakan apa saja secara ringan—misalnya minta waktu sekarang, identitas saya, hitung sederhana, atau pantun.`);
-        scrollToBottom();
+    function greet() {
+      openAnnouncement();
+      appendMessage('assistant', `Halo! Saya ${BOT_NAME}.\n\nIni adalah AI CHAT MODEL yang dibuat oleh ${AUTHOR} pada tahun 2025. Tanyakan apa saja secara ringan—misalnya minta waktu sekarang, identitas saya, hitung sederhana, atau pantun.`);
+      scrollToBottom();
+    }
+
+
+    function renderAttachments() {
+      if (!attachmentsEl) return;
+      attachmentsEl.innerHTML = '';
+      for (const [i, att] of pendingAttachments.entries()) {
+        const chip = document.createElement('span');
+        chip.style.border = '1px solid rgba(255,255,255,.12)';
+        chip.style.padding = '2px 6px';
+        chip.style.borderRadius = '8px';
+        chip.style.cursor = 'default';
+        chip.textContent = att.name || (att.type === 'image' ? 'Gambar' : 'Lampiran');
+        chip.title = `${att.type}${att.name ? ': ' + att.name : ''}`;
+        chip.addEventListener('click', () => { pendingAttachments.splice(i, 1); renderAttachments(); });
+        attachmentsEl.appendChild(chip);
       }
+    }
 
-
-      function renderAttachments(){
-        if (!attachmentsEl) return;
-        attachmentsEl.innerHTML = '';
-        for (const [i, att] of pendingAttachments.entries()){
-          const chip = document.createElement('span');
-          chip.style.border = '1px solid rgba(255,255,255,.12)';
-          chip.style.padding = '2px 6px';
-          chip.style.borderRadius = '8px';
-          chip.style.cursor = 'default';
-          chip.textContent = att.name || (att.type==='image' ? 'Gambar' : 'Lampiran');
-          chip.title = `${att.type}${att.name?': '+att.name:''}`;
-          chip.addEventListener('click', () => { pendingAttachments.splice(i,1); renderAttachments(); });
-          attachmentsEl.appendChild(chip);
+    fileInput?.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      for (const f of files) {
+        if (f.type.startsWith('image/')) {
+          const dataUrl = await readAsDataURL(f);
+          // limit ~5MB
+          if (dataUrl.length > 7_000_000) { alert(`Gambar terlalu besar: ${f.name}`); continue; }
+          pendingAttachments.push({ type: 'image', mime: f.type, dataUrl, name: f.name });
+        } else if (/text|json|csv/.test(f.type) || /\.(txt|md|csv|json|log)$/i.test(f.name)) {
+          const text = await readAsText(f);
+          const snippet = text.slice(0, 100_000);
+          pendingAttachments.push({ type: 'text', name: f.name, text: snippet });
+        } else {
+          alert(`Tipe file tidak didukung: ${f.name}`);
         }
       }
+      fileInput.value = '';
+      renderAttachments();
+    });
 
-      fileInput?.addEventListener('change', async (e) => {
-        const files = Array.from(e.target.files || []);
-        for (const f of files) {
-          if (f.type.startsWith('image/')) {
-            const dataUrl = await readAsDataURL(f);
-            // limit ~5MB
-            if (dataUrl.length > 7_000_000) { alert(`Gambar terlalu besar: ${f.name}`); continue; }
-            pendingAttachments.push({ type:'image', mime:f.type, dataUrl, name: f.name });
-          } else if (/text|json|csv/.test(f.type) || /\.(txt|md|csv|json|log)$/i.test(f.name)) {
-            const text = await readAsText(f);
-            const snippet = text.slice(0, 100_000);
-            pendingAttachments.push({ type:'text', name:f.name, text: snippet });
-          } else {
-            alert(`Tipe file tidak didukung: ${f.name}`);
-          }
-        }
-        fileInput.value = '';
-        renderAttachments();
-      });
+    function readAsDataURL(file) {
+      return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); });
+    }
+    function readAsText(file) {
+      return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result || '')); fr.onerror = rej; fr.readAsText(file); });
+    }
 
-      function readAsDataURL(file){
-        return new Promise((res, rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); });
-      }
-      function readAsText(file){
-        return new Promise((res, rej)=>{ const fr=new FileReader(); fr.onload=()=>res(String(fr.result||'')); fr.onerror=rej; fr.readAsText(file); });
-      }
+    if (!loadHistory()) {
+      greet();
+    } else {
+      scrollToBottom();
+    }
+  </script>
+</body>
 
-      // Inisialisasi
-      if (!loadHistory()) {
-        greet();
-      } else {
-        scrollToBottom();
-      }
-    </script>
-  </body>
 </html>
