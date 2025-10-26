@@ -21,7 +21,7 @@ export async function handler(event) {
     }
 
     const body = JSON.parse(event.body || '{}');
-    let { messages, system } = body;
+    let { messages, system, attachments } = body;
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return json(400, { error: 'messages must be a non-empty array' });
@@ -38,6 +38,28 @@ export async function handler(event) {
       const role = m && m.role === 'assistant' ? 'assistant' : 'user';
       const content = String(m && m.content ? m.content : '').slice(0, MAX_CONTENT_LEN);
       msgs.push({ role, content });
+    }
+
+    // attach uploaded files (images/text) to the last user message
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      for (let i = msgs.length - 1; i >= 0; i--) {
+        if (msgs[i].role === 'user') {
+          const baseText = typeof msgs[i].content === 'string' ? msgs[i].content : '';
+          const parts = [{ type: 'text', text: baseText }];
+          for (const att of attachments) {
+            if (att && att.type === 'image' && typeof att.dataUrl === 'string' && att.dataUrl.startsWith('data:image/')) {
+              if (att.dataUrl.length <= 7_000_000) {
+                parts.push({ type: 'image_url', image_url: { url: att.dataUrl } });
+              }
+            } else if (att && att.type === 'text' && typeof att.text === 'string') {
+              const name = att.name ? `\n(Nama file: ${att.name})` : '';
+              parts.push({ type: 'text', text: `Lampiran teks${name}:\n\n${att.text.slice(0, 100_000)}` });
+            }
+          }
+          msgs[i] = { role: 'user', content: parts };
+          break;
+        }
+      }
     }
 
     // Try models with fallback
