@@ -523,17 +523,24 @@
       } catch (err) {
         console.error('API error:', err);
         const msg = (err?.message || '').toLowerCase();
-        if (
-          msg.includes('insufficient_quota') ||
-          msg.includes('quota') ||
-          msg.includes('429') ||
-          msg.includes('rate limit') ||
-          msg.includes('billing')
-        ) {
-          return 'Maaf Server Sedang Sibuk. Terima Kasih';
+          if (
+            msg.includes('insufficient_quota') ||
+            msg.includes('quota') ||
+            msg.includes('429') ||
+            msg.includes('rate limit') ||
+            msg.includes('billing')
+          ) {
+            return 'Maaf Server Sedang Sibuk. Terima Kasih';
+          }
+          if (
+            msg.includes('account_deactivated') ||
+            msg.includes('deactivated') ||
+            msg.includes('invalid_request_error')
+          ) {
+            return 'sorry the server has been down';
+          }
+          return 'Gagal: ' + (err?.message || 'tidak diketahui');
         }
-        return 'Gagal: ' + (err?.message || 'tidak diketahui');
-      }
     }
 
     function tryCalc(text) {
