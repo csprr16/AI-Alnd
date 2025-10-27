@@ -495,25 +495,24 @@
 
 
     async function generateReply(input, history) {
-        const text = (input || '').trim();
-        if (!text && pendingAttachments.length === 0) return 'Bisa ulangi pertanyaannya?';
+      const text = (input || '').trim();
+      if (!text && pendingAttachments.length === 0) return 'Bisa ulangi pertanyaannya?';
 
-        // Bangun riwayat percakapan (role: user/assistant)
-        const prior = history
-          .filter(h => h.role === 'user' || h.role === 'assistant')
-          .map(h => ({ role: h.role, content: h.text || '' }));
-        const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
+      const prior = history
+        .filter(h => h.role === 'user' || h.role === 'assistant')
+        .map(h => ({ role: h.role, content: h.text || '' }));
+      const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
 
-        const wantsLong = /\b(jelaskan|explain|detail|rinci|panjang|uraikan|langkah|step by step|contoh)\b/i.test(text);
-        const system = `${BOT_NAME} adalah asisten AI berbahasa Indonesia (dibuat oleh ${AUTHOR}, 2025). Sesuaikan panjang jawaban: jika diminta menjelaskan/dirinci, jawab panjang, terstruktur, dengan langkah dan contoh; jika tidak, jawab ringkas (<= 5 kalimat) namun tetap jelas.`;
-        const maxTokens = wantsLong ? 1200 : 400;
+      const wantsLong = /\b(jelaskan|explain|detail|rinci|panjang|uraikan|langkah|step by step|contoh)\b/i.test(text);
+      const system = `${BOT_NAME} adalah asisten AI berbahasa Indonesia (dibuat oleh ${AUTHOR}, 2025). Sesuaikan panjang jawaban: jika diminta menjelaskan/dirinci, jawab panjang, terstruktur, dengan langkah dan contoh; jika tidak, jawab ringkas (<= 5 kalimat) namun tetap jelas.`;
+      const maxTokens = wantsLong ? 1200 : 400;
 
-        try {
-          const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages, system, attachments: pendingAttachments, max_tokens: maxTokens })
-          });
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages, system, attachments: pendingAttachments, max_tokens: maxTokens })
+        });
         let data;
         if (!res.ok) {
           try { data = await res.json(); } catch { }
@@ -525,34 +524,34 @@
       } catch (err) {
         console.error('API error:', err);
         const msg = (err?.message || '').toLowerCase();
-          if (
-            msg.includes('insufficient_quota') ||
-            msg.includes('quota') ||
-            msg.includes('429') ||
-            msg.includes('rate limit') ||
-            msg.includes('billing')
-          ) {
-            return 'Maaf Server Sedang Sibuk. Terima Kasih';
-          }
-          if (
-            msg.includes('account_deactivated') ||
-            msg.includes('deactivated') ||
-            msg.includes('invalid_request_error')
-          ) {
-            return 'sorry the server has been down';
-          }
-          if (
-            msg.includes('incorrect api key') ||
-            msg.includes('401') ||
-            msg.includes('unauthorized') ||
-            msg.includes('invalid api key') ||
-            msg.includes('invalid_api_key') ||
-            msg.includes('authentication')
-          ) {
-            return 'Sorry Server is OFF';
-          }
-          return 'Gagal: ' + (err?.message || 'tidak diketahui');
+        if (
+          msg.includes('insufficient_quota') ||
+          msg.includes('quota') ||
+          msg.includes('429') ||
+          msg.includes('rate limit') ||
+          msg.includes('billing')
+        ) {
+          return 'Maaf Server Sedang Sibuk. Terima Kasih';
         }
+        if (
+          msg.includes('account_deactivated') ||
+          msg.includes('deactivated') ||
+          msg.includes('invalid_request_error')
+        ) {
+          return 'sorry the server has been down';
+        }
+        if (
+          msg.includes('incorrect api key') ||
+          msg.includes('401') ||
+          msg.includes('unauthorized') ||
+          msg.includes('invalid api key') ||
+          msg.includes('invalid_api_key') ||
+          msg.includes('authentication')
+        ) {
+          return 'Sorry Server is OFF';
+        }
+        return 'Gagal: ' + (err?.message || 'tidak diketahui');
+      }
     }
 
     function tryCalc(text) {
@@ -662,7 +661,7 @@
       for (const f of files) {
         if (f.type.startsWith('image/')) {
           const dataUrl = await readAsDataURL(f);
-          // limit ~5MB
+          // limit 5mb
           if (dataUrl.length > 7_000_000) { alert(`Gambar terlalu besar: ${f.name}`); continue; }
           pendingAttachments.push({ type: 'image', mime: f.type, dataUrl, name: f.name });
         } else if (/text|json|csv/.test(f.type) || /\.(txt|md|csv|json|log)$/i.test(f.name)) {
