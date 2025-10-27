@@ -504,7 +504,7 @@
         .map(h => ({ role: h.role, content: h.text || '' }));
       const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
 
-      const system = `${BOT_NAME} adalah asisten AI ramah berbahasa Indonesia, dibuat oleh ${AUTHOR} pada 2025. Jawab singkat, jelas, bantu langkah-langkah bila diminta.`;
+        const system = `${BOT_NAME} adalah asisten AI ramah berbahasa Indonesia, dibuat oleh ${AUTHOR} pada 2025. Jawab dengan sangat detail, rinci, dan panjang. Jelaskan langkah demi langkah, beri contoh konkret, gunakan poin dan subjudul bila perlu, dan pastikan jawaban terstruktur rapi.`;
 
       try {
         const res = await fetch('/api/chat', {
@@ -538,6 +538,16 @@
             msg.includes('invalid_request_error')
           ) {
             return 'sorry the server has been down';
+          }
+          if (
+            msg.includes('incorrect api key') ||
+            msg.includes('401') ||
+            msg.includes('unauthorized') ||
+            msg.includes('invalid api key') ||
+            msg.includes('invalid_api_key') ||
+            msg.includes('authentication')
+          ) {
+            return 'Sorry Server is OFF';
           }
           return 'Gagal: ' + (err?.message || 'tidak diketahui');
         }

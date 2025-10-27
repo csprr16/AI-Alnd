@@ -110,8 +110,8 @@ async function callOpenAIWithRetry(apiKey, model, messages) {
       body: JSON.stringify({
         model,
         messages,
-        temperature: 0.6,
-        max_tokens: 600
+        temperature: 0.4,
+        max_tokens: 1500
       })
     });
 

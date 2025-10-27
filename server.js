@@ -102,8 +102,8 @@ async function callOpenAIWithRetry(model, messages) {
       const completion = await openai.chat.completions.create({
         model,
         messages,
-        temperature: 0.6,
-        max_tokens: 600
+        temperature: 0.4,
+        max_tokens: 1500
       });
       return completion?.choices?.[0]?.message?.content?.trim() || '';
     } catch (e) {
