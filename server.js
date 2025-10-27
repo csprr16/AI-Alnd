@@ -30,7 +30,7 @@ app.get('/api/health', (req, res) => {
 // Chat endpoint
 app.post('/api/chat', async (req, res) => {
   try {
-    const { messages, system, attachments } = req.body || {};
+    const { messages, system, attachments, max_tokens } = req.body || {};
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: 'messages must be a non-empty array' });
     }
@@ -99,11 +99,12 @@ async function callOpenAIWithRetry(model, messages) {
   let lastErr;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
+      const mt = Math.max(50, Math.min(2000, Number(max_tokens) || 400));
       const completion = await openai.chat.completions.create({
         model,
         messages,
         temperature: 0.4,
-        max_tokens: 1500
+        max_tokens: mt
       });
       return completion?.choices?.[0]?.message?.content?.trim() || '';
     } catch (e) {

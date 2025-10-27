@@ -21,7 +21,7 @@ export async function handler(event) {
     }
 
     const body = JSON.parse(event.body || '{}');
-    let { messages, system, attachments } = body;
+    let { messages, system, attachments, max_tokens } = body;
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return json(400, { error: 'messages must be a non-empty array' });
@@ -111,7 +111,7 @@ async function callOpenAIWithRetry(apiKey, model, messages) {
         model,
         messages,
         temperature: 0.4,
-        max_tokens: 1500
+        max_tokens: Math.max(50, Math.min(2000, Number(max_tokens) || 400))
       })
     });
 

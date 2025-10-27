@@ -495,23 +495,25 @@
 
 
     async function generateReply(input, history) {
-      const text = (input || '').trim();
-      if (!text && pendingAttachments.length === 0) return 'Bisa ulangi pertanyaannya?';
+        const text = (input || '').trim();
+        if (!text && pendingAttachments.length === 0) return 'Bisa ulangi pertanyaannya?';
 
+        // Bangun riwayat percakapan (role: user/assistant)
+        const prior = history
+          .filter(h => h.role === 'user' || h.role === 'assistant')
+          .map(h => ({ role: h.role, content: h.text || '' }));
+        const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
 
-      const prior = history
-        .filter(h => h.role === 'user' || h.role === 'assistant')
-        .map(h => ({ role: h.role, content: h.text || '' }));
-      const messages = [...prior, { role: 'user', content: text || '(lampiran tanpa teks)' }];
+        const wantsLong = /\b(jelaskan|explain|detail|rinci|panjang|uraikan|langkah|step by step|contoh)\b/i.test(text);
+        const system = `${BOT_NAME} adalah asisten AI berbahasa Indonesia (dibuat oleh ${AUTHOR}, 2025). Sesuaikan panjang jawaban: jika diminta menjelaskan/dirinci, jawab panjang, terstruktur, dengan langkah dan contoh; jika tidak, jawab ringkas (<= 5 kalimat) namun tetap jelas.`;
+        const maxTokens = wantsLong ? 1200 : 400;
 
-        const system = `${BOT_NAME} adalah asisten AI ramah berbahasa Indonesia, dibuat oleh ${AUTHOR} pada 2025. Jawab dengan sangat detail, rinci, dan panjang. Jelaskan langkah demi langkah, beri contoh konkret, gunakan poin dan subjudul bila perlu, dan pastikan jawaban terstruktur rapi.`;
-
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages, system, attachments: pendingAttachments })
-        });
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages, system, attachments: pendingAttachments, max_tokens: maxTokens })
+          });
         let data;
         if (!res.ok) {
           try { data = await res.json(); } catch { }
