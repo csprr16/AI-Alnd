@@ -31,6 +31,7 @@ app.get('/api/health', (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages, system, attachments, max_tokens } = req.body || {};
+    const mtRoute = Math.max(50, Math.min(2000, Number(max_tokens) || 400));
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: 'messages must be a non-empty array' });
     }
@@ -75,7 +76,7 @@ app.post('/api/chat', async (req, res) => {
     let lastErr;
     for (const MODEL of MODELS) {
       try {
-        const reply = await callOpenAIWithRetry(MODEL, msgs);
+        const reply = await callOpenAIWithRetry(MODEL, msgs, mtRoute);
         return res.json({ reply, model: MODEL });
       } catch (e) {
         lastErr = e;
@@ -93,13 +94,12 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-async function callOpenAIWithRetry(model, messages) {
+async function callOpenAIWithRetry(model, messages, mt) {
   const maxAttempts = 3;
   let delay = 500;
   let lastErr;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const mt = Math.max(50, Math.min(2000, Number(max_tokens) || 400));
       const completion = await openai.chat.completions.create({
         model,
         messages,

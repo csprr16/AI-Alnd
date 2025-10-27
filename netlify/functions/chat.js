@@ -22,6 +22,7 @@ export async function handler(event) {
 
     const body = JSON.parse(event.body || '{}');
     let { messages, system, attachments, max_tokens } = body;
+    const mt = Math.max(50, Math.min(2000, Number(max_tokens) || 400));
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return json(400, { error: 'messages must be a non-empty array' });
@@ -66,7 +67,7 @@ export async function handler(event) {
     let lastErrTxt = '';
     for (const MODEL of MODELS) {
       try {
-        const reply = await callOpenAIWithRetry(apiKey, MODEL, msgs);
+        const reply = await callOpenAIWithRetry(apiKey, MODEL, msgs, mt);
         return json(200, { reply, model: MODEL });
       } catch (e) {
         lastErrTxt = e && e.message ? e.message : String(e);
@@ -96,7 +97,7 @@ async function safeText(res) {
   try { return await res.text(); } catch { return ''; }
 }
 
-async function callOpenAIWithRetry(apiKey, model, messages) {
+async function callOpenAIWithRetry(apiKey, model, messages, mt) {
   const maxAttempts = 3;
   let delay = 500;
   let lastErr = '';
@@ -111,7 +112,7 @@ async function callOpenAIWithRetry(apiKey, model, messages) {
         model,
         messages,
         temperature: 0.4,
-        max_tokens: Math.max(50, Math.min(2000, Number(max_tokens) || 400))
+        max_tokens: mt
       })
     });
 
