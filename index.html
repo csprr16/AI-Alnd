@@ -616,7 +616,7 @@
           <div class="avatar" aria-hidden="true">AI</div>
           <div>
             <div class="bubble info">${escapeHtml(text)}</div>
-            <div class="meta" data-ts="${time}">INFO • ${new Date(time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+            <div class="meta" data-ts="${time}">IMPORTANT • ${new Date(time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
           </div>
         `;
       messagesEl.appendChild(wrap);
@@ -688,6 +688,7 @@
     } else {
       scrollToBottom();
     }
+    appendInfoMessage('Jangan Mencari Yang Sempurna,\nnamun Sempurnakanlah bersama.\n-Anonym');
   </script>
 </body>
 
